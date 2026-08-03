@@ -122,18 +122,18 @@ export const OnboardingModal = ({ isOpen, onClose }) => {
   return (
     <div 
       onClick={handleClose}
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/20 backdrop-blur-xs ${
+      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-pink-950/40 backdrop-blur-xs overflow-y-auto ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
     >
       <div 
-        className={`w-full max-w-md bg-white rounded-3xl shadow-2xl border-2 border-pink-300 overflow-hidden transform transition-all ${
+        className={`w-full max-w-md bg-white rounded-3xl shadow-2xl border-2 border-pink-300 overflow-hidden my-auto max-h-[88vh] flex flex-col ${
           isClosing ? 'animate-modal-pop-out' : 'animate-modal-pop'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-2 bg-white">
+        {/* Header - Sticky */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 bg-white border-b border-pink-100 shrink-0 select-none z-10">
           <div>
             <span className="text-[11px] font-black uppercase text-rose-600 tracking-wider">
               Step {currentStep + 1} of {steps.length}
@@ -145,15 +145,15 @@ export const OnboardingModal = ({ isOpen, onClose }) => {
           <button
             type="button"
             onClick={handleComplete}
-            className="p-2 text-rose-700 hover:text-rose-900 rounded-xl transition-colors cursor-pointer"
+            className="p-1.5 text-rose-700 hover:text-rose-900 hover:bg-pink-50 rounded-xl transition-colors cursor-pointer"
             title="Close tutorial"
           >
             <FaTimes className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Body content */}
-        <div className="p-6 bg-white space-y-4">
+        {/* Body content - Scrollable */}
+        <div className="p-6 bg-white space-y-4 overflow-y-auto flex-1 custom-scrollbar">
           {currentStepData.content}
 
           {/* Progress dots */}

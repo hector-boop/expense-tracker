@@ -24,12 +24,12 @@ export const OptionPickerModal = ({
   return (
     <div 
       onClick={handleClose}
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-950/20 backdrop-blur-xs ${
+      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-pink-950/40 backdrop-blur-xs overflow-y-auto ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
     >
       <div 
-        className={`w-full max-w-sm bg-white rounded-3xl p-6 border-2 border-pink-300 shadow-2xl space-y-4 relative overflow-hidden ${
+        className={`w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 border-2 border-pink-300 shadow-2xl space-y-4 my-auto max-h-[88vh] flex flex-col overflow-y-auto custom-scrollbar ${
           isClosing ? 'animate-modal-pop-out' : 'animate-modal-pop'
         }`}
         onClick={(e) => e.stopPropagation()}
