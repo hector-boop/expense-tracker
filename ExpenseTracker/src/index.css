@@ -1,0 +1,314 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #ffffff;
+    --text-primary: #880e4f;
+    --text-secondary: #ad1457;
+    --border-color: #fbcfe8;
+  }
+
+  .dark {
+    --bg-primary: #ffffff;
+    --bg-secondary: #ffffff;
+    --text-primary: #880e4f;
+    --text-secondary: #ad1457;
+    --border-color: #fbcfe8;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Quicksand', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3, .font-cursive {
+    font-family: 'Sacramento', cursive;
+  }
+}
+
+/* Generalize all input placeholders to theme-harmonious rose tones */
+::placeholder {
+  color: #fb7185 !important; /* Tailwind rose-400 */
+  opacity: 0.85 !important;
+}
+
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #fb7185 !important;
+  opacity: 0.85 !important;
+}
+
+/* Standardize Chrome/Safari date input text from gray to theme rose */
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #881337 !important; /* Tailwind rose-900 */
+  font-weight: 700 !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.7;
+  filter: invert(20%) sepia(85%) saturate(3000%) hue-rotate(330deg) brightness(85%) contrast(95%);
+}
+
+/* Pink Grid Background Pattern */
+.pink-grid-bg {
+  background-color: #ffffff;
+  background-image: 
+    linear-gradient(to right, rgba(248, 187, 208, 0.4) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(248, 187, 208, 0.4) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Standardized Clean White Card with Pink Border */
+.clean-pink-card {
+  background-color: #ffffff;
+  border: 2px solid #fbcfe8;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 15px rgba(251, 207, 232, 0.25);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clean-pink-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(251, 207, 232, 0.4);
+}
+
+/* Custom Scrollbar - Pink Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff5f7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f472b6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e11d48;
+}
+
+/* Recharts Custom Tooltip Styling */
+.recharts-default-tooltip {
+  border-radius: 1rem !important;
+  border: 2px solid #fbcfe8 !important;
+  box-shadow: 0 4px 12px rgba(251, 207, 232, 0.3) !important;
+  background-color: #ffffff !important;
+  padding: 8px 12px !important;
+}
+
+/* Custom Tooltip Arrow */
+.tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #e11d48;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Toast Animations */
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(-100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-toast-in {
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Duck Pet Animations */
+@keyframes duckWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+@keyframes duckQuack {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18) rotate(5deg); }
+}
+
+@keyframes duckPopEnter {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  70% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes duckPopExit {
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(0) rotate(20deg); opacity: 0; }
+}
+
+.animate-duck-wiggle {
+  animation: duckWiggle 2s ease-in-out infinite;
+}
+
+.animate-duck-quack {
+  animation: duckQuack 0.4s ease-in-out;
+}
+
+.animate-duck-enter {
+  animation: duckPopEnter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-duck-exit {
+  animation: duckPopExit 0.35s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+}
+
+/* Smooth Fade Transition when Loading Completes (Pure Opacity Fade - Locked Position) */
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-content-fade {
+  animation: contentFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes loaderFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-loader-fade-out {
+  animation: loaderFadeOut 0.2s ease-out forwards;
+}
+
+/* ============================================================
+   STANDARDIZED MODAL ANIMATIONS — Fade In / Fade Out
+   Used by: Modal, OptionPickerModal, DatePickerModal,
+            OnboardingModal (and any component wrapping Modal)
+   ============================================================ */
+
+/* Backdrop — Entry */
+@keyframes modalBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Backdrop — Exit */
+@keyframes modalBackdropOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Panel — Entry: fade in + gentle rise */
+@keyframes modalPanelIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Panel — Exit: fade out + gentle sink */
+@keyframes modalPanelOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+}
+
+.animate-modal-backdrop {
+  animation: modalBackdropIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-modal-backdrop-out {
+  animation: modalBackdropOut 0.18s ease-in forwards;
+}
+
+.animate-modal-pop {
+  animation: modalPanelIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-modal-pop-out {
+  animation: modalPanelOut 0.18s ease-in forwards;
+}
+
+/* List Item Entry Animation */
+@keyframes listItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-list-item-in {
+  animation: listItemIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Shake Animation for Form Errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Global Prefers-Reduced-Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
