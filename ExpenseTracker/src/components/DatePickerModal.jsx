@@ -88,12 +88,12 @@ export const DatePickerModal = ({
   return (
     <div 
       onClick={handleClose}
-      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-pink-950/40 backdrop-blur-xs overflow-y-auto ${
+      className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 pt-20 sm:pt-24 pb-6 overflow-y-auto bg-pink-950/40 backdrop-blur-xs ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
     >
       <div 
-        className={`w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 border-2 border-pink-300 shadow-2xl space-y-4 my-auto max-h-[88vh] flex flex-col overflow-y-auto custom-scrollbar ${
+        className={`w-full max-w-sm bg-white rounded-3xl p-6 border-2 border-pink-300 shadow-2xl space-y-4 relative overflow-hidden ${
           isClosing ? 'animate-modal-pop-out' : 'animate-modal-pop'
         }`}
         onClick={(e) => e.stopPropagation()}

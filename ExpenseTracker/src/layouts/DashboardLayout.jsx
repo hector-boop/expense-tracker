@@ -22,8 +22,10 @@ export const DashboardLayout = ({ children, title = 'Dashboard', onOpenAddModal,
           onOpenTour={onOpenTour}
           onOpenExport={onOpenExport}
         />
-        <main key={location.pathname} className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6 animate-content-fade">
-          {children}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+          <div key={location.pathname} className="space-y-6 animate-content-fade">
+            {children}
+          </div>
         </main>
       </div>
 
