@@ -42,90 +42,93 @@ export const SettleDebtModal = ({ isOpen, onClose, debt, onSettle }) => {
       onClose={onClose}
       title={debt.type === 'i_owe' ? `Pay Debt to ${debt.person}` : `Receive Payment from ${debt.person}`}
     >
-      <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-        {/* Debt Context Banner */}
-        <div className="p-3 bg-pink-50 rounded-2xl border-2 border-pink-200 space-y-1">
-          <p className="text-xs font-black text-rose-950 truncate">
-            {debt.title || 'Debt Entry'}
-          </p>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-rose-800 font-bold">Total Amount:</span>
-            <span className="font-black text-rose-950">{formatCurrency(debt.amount)}</span>
+      <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 text-xs font-bold uppercase overflow-hidden -m-6">
+        {/* Scrollable Form Content Body */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4">
+          {/* Debt Context Banner */}
+          <div className="p-3.5 bg-pink-50 rounded-2xl border-2 border-pink-200 space-y-1.5">
+            <p className="text-xs font-black text-rose-950 truncate">
+              {debt.title || 'Debt Entry'}
+            </p>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-rose-800 font-bold">Total Amount:</span>
+              <span className="font-black text-rose-950">{formatCurrency(debt.amount)}</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-rose-800 font-bold">Already Paid:</span>
+              <span className="font-black text-rose-950">{formatCurrency(debt.amount_paid)}</span>
+            </div>
+            <div className="flex items-center justify-between text-xs pt-1.5 border-t border-pink-200">
+              <span className="text-rose-900 font-black">Remaining Unpaid Balance:</span>
+              <span className="font-black text-rose-950 text-sm">{formatCurrency(remainingBalance)}</span>
+            </div>
           </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-rose-800 font-bold">Already Paid:</span>
-            <span className="font-black text-rose-950">{formatCurrency(debt.amount_paid)}</span>
-          </div>
-          <div className="flex items-center justify-between text-xs pt-1 border-t border-pink-200">
-            <span className="text-rose-900 font-black">Remaining Unpaid Balance:</span>
-            <span className="font-black text-rose-950 text-sm">{formatCurrency(remainingBalance)}</span>
-          </div>
-        </div>
 
-        {/* Payment Amount Input */}
-        <div>
-          <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-            Payment Amount ($)
-          </label>
-          <div className="relative">
-            <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
-            <input
-              type="number"
-              step="0.01"
-              min="0.01"
-              max={remainingBalance}
-              placeholder="0.00"
-              value={paymentAmount}
-              onChange={(e) => setPaymentAmount(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 text-rose-950 placeholder-rose-400 font-black"
-            />
-          </div>
-          <div className="flex justify-end gap-2 mt-1.5">
-            <button
-              type="button"
-              onClick={() => setPaymentAmount(String((remainingBalance / 2).toFixed(2)))}
-              className="text-[11px] font-black uppercase text-rose-800 hover:text-rose-950 bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
-            >
-              50% ({formatCurrency(remainingBalance / 2)})
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaymentAmount(String(remainingBalance))}
-              className="text-[11px] font-black uppercase text-rose-800 hover:text-rose-950 bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
-            >
-              Full ({formatCurrency(remainingBalance)})
-            </button>
-          </div>
-        </div>
-
-        {/* Log as expense option for "I Owe" debts */}
-        {debt.type === 'i_owe' && (
-          <div className="p-3 bg-white border-2 border-pink-200 rounded-2xl flex items-start gap-3">
-            <input
-              type="checkbox"
-              id="logAsExpenseCheck"
-              checked={logAsExpense}
-              onChange={(e) => setLogAsExpense(e.target.checked)}
-              className="mt-0.5 rounded border-pink-300 text-rose-600 focus:ring-rose-500 w-4 h-4 cursor-pointer"
-            />
-            <label htmlFor="logAsExpenseCheck" className="text-xs text-rose-900 cursor-pointer select-none">
-              <span className="font-bold flex items-center gap-1.5 text-rose-950">
-                <FaReceipt className="w-3.5 h-3.5 text-rose-600 inline" />
-                Add payment to Expense Tracker
-              </span>
-              <p className="text-[11px] text-rose-700 font-semibold mt-0.5">
-                Automatically logs this payment amount as a new expense item under "Bills" for today's date.
-              </p>
+          {/* Payment Amount Input */}
+          <div>
+            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
+              Payment Amount ($)
             </label>
+            <div className="relative">
+              <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                max={remainingBalance}
+                placeholder="0.00"
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 text-rose-950 placeholder-rose-400 font-black"
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-2">
+              <button
+                type="button"
+                onClick={() => setPaymentAmount(String((remainingBalance / 2).toFixed(2)))}
+                className="text-[11px] font-black uppercase text-rose-800 hover:text-rose-950 bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
+              >
+                50% ({formatCurrency(remainingBalance / 2)})
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentAmount(String(remainingBalance))}
+                className="text-[11px] font-black uppercase text-rose-800 hover:text-rose-950 bg-pink-100 border border-pink-200 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
+              >
+                Full ({formatCurrency(remainingBalance)})
+              </button>
+            </div>
           </div>
-        )}
 
-        {error && (
-          <p className="text-xs text-rose-800 font-bold text-center">{error}</p>
-        )}
+          {/* Log as expense option for "I Owe" debts */}
+          {debt.type === 'i_owe' && (
+            <div className="p-3.5 bg-white border-2 border-pink-200 rounded-2xl flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="logAsExpenseCheck"
+                checked={logAsExpense}
+                onChange={(e) => setLogAsExpense(e.target.checked)}
+                className="mt-0.5 rounded border-pink-300 text-rose-600 focus:ring-rose-500 w-4 h-4 cursor-pointer"
+              />
+              <label htmlFor="logAsExpenseCheck" className="text-xs text-rose-900 cursor-pointer select-none">
+                <span className="font-bold flex items-center gap-1.5 text-rose-950">
+                  <FaReceipt className="w-3.5 h-3.5 text-rose-600 inline" />
+                  Add payment to Expense Tracker
+                </span>
+                <p className="text-[11px] text-rose-700 font-semibold mt-0.5 normal-case">
+                  Automatically logs this payment amount as a new expense item under "Bills" for today's date.
+                </p>
+              </label>
+            </div>
+          )}
 
-        {/* Action buttons */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-pink-100">
+          {error && (
+            <p className="text-xs text-rose-600 font-bold text-center">{error}</p>
+          )}
+        </div>
+
+        {/* Fixed Sticky Bottom Footer Bar */}
+        <div className="px-6 py-3.5 bg-pink-50/50 border-t border-pink-100 flex items-center justify-end gap-3 shrink-0 z-10">
           <button
             type="button"
             onClick={onClose}
