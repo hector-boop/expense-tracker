@@ -64,169 +64,160 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
       onClose={onClose}
       title={initialData ? 'Edit Debt Record' : 'Add Debt Record'}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 text-xs font-bold uppercase overflow-hidden -m-6">
-        {/* Scrollable Form Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4">
-          {/* Type selector toggle */}
-          <div>
-            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1.5">
-              Debt Type
-            </label>
-            <div className="grid grid-cols-2 gap-2 p-1.5 bg-pink-50 rounded-2xl border border-pink-200">
-              <button
-                type="button"
-                onClick={() => setType('i_owe')}
-                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold uppercase transition-all cursor-pointer ${
-                  type === 'i_owe'
-                    ? 'bg-rose-600 text-white shadow-xs border border-rose-700'
-                    : 'text-rose-900 hover:bg-pink-100'
-                }`}
-              >
-                <FaCoins className="w-3.5 h-3.5" />
-                <span>I Owe (Payable)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setType('owed_to_me')}
-                className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold uppercase transition-all cursor-pointer ${
-                  type === 'owed_to_me'
-                    ? 'bg-rose-600 text-white shadow-xs border border-rose-700'
-                    : 'text-rose-900 hover:bg-pink-100'
-                }`}
-              >
-                <FaHandHoldingUsd className="w-3.5 h-3.5" />
-                <span>Owed to Me (Receivable)</span>
-              </button>
-            </div>
-          </div>
-
-          {errors.submit && (
-            <p className="text-xs text-rose-600 font-bold text-center">{errors.submit}</p>
-          )}
-
-          {/* Person Name */}
-          <div>
-            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-              {type === 'i_owe' ? 'Creditor (Who do you owe?)' : 'Debtor (Who owes you?)'}
-            </label>
-            <div className="relative">
-              <FaUser className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
-              <input
-                type="text"
-                placeholder="e.g. John Doe, Credit Card, Bank"
-                value={person}
-                onChange={(e) => setPerson(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold ${
-                  errors.person ? 'border-rose-500 bg-rose-50' : 'border-pink-300'
-                }`}
-              />
-            </div>
-            {errors.person && <p className="mt-1 text-[11px] text-rose-600 font-semibold">{errors.person}</p>}
-          </div>
-
-          {/* Reason / Title */}
-          <div>
-            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-              Reason / Description
-            </label>
-            <div className="relative">
-              <FaTag className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
-              <input
-                type="text"
-                placeholder="e.g. Dinner bill split, Loan for laptop, Rent share"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold ${
-                  errors.title ? 'border-rose-500 bg-rose-50' : 'border-pink-300'
-                }`}
-              />
-            </div>
-            {errors.title && <p className="mt-1 text-[11px] text-rose-600 font-semibold">{errors.title}</p>}
-          </div>
-
-          {/* Amounts Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Total Amount */}
-            <div>
-              <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-                Total Amount ($)
-              </label>
-              <div className="relative">
-                <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold ${
-                    errors.amount ? 'border-rose-500 bg-rose-50' : 'border-pink-300'
-                  }`}
-                />
-              </div>
-              {errors.amount && <p className="mt-1 text-[11px] text-rose-600 font-semibold">{errors.amount}</p>}
-            </div>
-
-            {/* Already Paid Amount */}
-            <div>
-              <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-                Already Paid ($)
-              </label>
-              <div className="relative">
-                <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="0.00"
-                  value={amountPaid}
-                  onChange={(e) => setAmountPaid(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold ${
-                    errors.amountPaid ? 'border-rose-500 bg-rose-50' : 'border-pink-300'
-                  }`}
-                />
-              </div>
-              {errors.amountPaid && <p className="mt-1 text-[11px] text-rose-600 font-semibold">{errors.amountPaid}</p>}
-            </div>
-          </div>
-
-          {/* Target Due Date */}
-          <div>
-            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-              Due Date (Optional)
-            </label>
-            <div className="relative">
-              <FaCalendarAlt className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
-              <input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold"
-              />
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div>
-            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-              Notes / Payment Instructions (Optional)
-            </label>
-            <div className="relative">
-              <FaStickyNote className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
-              <textarea
-                rows="2"
-                placeholder="e.g. GCash/Bank account info or payment notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 placeholder-rose-400 font-bold"
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+        {/* Type selector toggle */}
+        <div>
+          <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1.5">
+            Debt Type
+          </label>
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-pink-50 rounded-2xl border border-pink-200">
+            <button
+              type="button"
+              onClick={() => setType('i_owe')}
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                type === 'i_owe'
+                  ? 'bg-rose-600 text-white shadow-xs border-2 border-rose-700'
+                  : 'text-rose-900 bg-white hover:bg-pink-100 border border-pink-200'
+              }`}
+            >
+              <FaCoins className={`w-3.5 h-3.5 ${type === 'i_owe' ? 'text-white' : 'text-rose-600'}`} />
+              <span>I Owe (Payable)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setType('owed_to_me')}
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                type === 'owed_to_me'
+                  ? 'bg-rose-600 text-white shadow-xs border-2 border-rose-700'
+                  : 'text-rose-900 bg-white hover:bg-pink-100 border border-pink-200'
+              }`}
+            >
+              <FaHandHoldingUsd className={`w-3.5 h-3.5 ${type === 'owed_to_me' ? 'text-white' : 'text-rose-600'}`} />
+              <span>Owed to Me (Receivable)</span>
+            </button>
           </div>
         </div>
 
-        {/* Fixed Sticky Bottom Footer Bar */}
-        <div className="px-6 py-3.5 bg-pink-50/50 border-t border-pink-100 flex items-center justify-end gap-3 shrink-0 z-10">
+        {/* Person / Contact */}
+        <div>
+          <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
+            {type === 'i_owe' ? 'Creditor (Who do you owe?)' : 'Debtor (Who owes you?)'}
+          </label>
+          <div className="relative">
+            <FaUser className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+            <input
+              type="text"
+              placeholder={type === 'i_owe' ? 'e.g. John Doe, Credit Card, Bank' : 'e.g. Sarah Smith, Alex'}
+              value={person}
+              onChange={(e) => setPerson(e.target.value)}
+              className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 placeholder-rose-400 font-bold ${
+                errors.person ? 'border-rose-600 bg-pink-50' : 'border-pink-300'
+              }`}
+            />
+          </div>
+          {errors.person && <p className="text-xs text-rose-800 mt-1 font-bold">{errors.person}</p>}
+        </div>
+
+        {/* Title / Description */}
+        <div>
+          <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
+            Reason / Description
+          </label>
+          <div className="relative">
+            <FaTag className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+            <input
+              type="text"
+              placeholder="e.g. Dinner bill split, Loan for laptop, Rent share"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 placeholder-rose-400 font-bold ${
+                errors.title ? 'border-rose-600 bg-pink-50' : 'border-pink-300'
+              }`}
+            />
+          </div>
+          {errors.title && <p className="text-xs text-rose-800 mt-1 font-bold">{errors.title}</p>}
+        </div>
+
+        {/* Amount & Amount Paid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
+              Total Amount ($)
+            </label>
+            <div className="relative">
+              <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 placeholder-rose-400 font-bold ${
+                  errors.amount ? 'border-rose-600 bg-pink-50' : 'border-pink-300'
+                }`}
+              />
+            </div>
+            {errors.amount && <p className="text-xs text-rose-800 mt-1 font-bold">{errors.amount}</p>}
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
+              Already Paid ($)
+            </label>
+            <div className="relative">
+              <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                value={amountPaid}
+                onChange={(e) => setAmountPaid(e.target.value)}
+                className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 placeholder-rose-400 font-bold ${
+                  errors.amountPaid ? 'border-rose-600 bg-pink-50' : 'border-pink-300'
+                }`}
+              />
+            </div>
+            {errors.amountPaid && <p className="text-xs text-rose-800 mt-1 font-bold">{errors.amountPaid}</p>}
+          </div>
+        </div>
+
+        {/* Due Date */}
+        <div>
+          <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
+            Due Date (Optional)
+          </label>
+          <div className="relative">
+            <FaCalendarAlt className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold"
+            />
+          </div>
+        </div>
+
+        {/* Notes */}
+        <div>
+          <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
+            Notes / Payment Instructions (Optional)
+          </label>
+          <div className="relative">
+            <FaStickyNote className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+            <textarea
+              rows="2"
+              placeholder="e.g. GCash/Bank account info or payment notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 placeholder-rose-400 font-bold"
+            />
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-pink-100">
           <button
             type="button"
             onClick={onClose}

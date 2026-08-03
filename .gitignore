@@ -1,0 +1,5 @@
+*.pdf
+*.csv
+*.docx
+hci_report*
+package-lock.json
