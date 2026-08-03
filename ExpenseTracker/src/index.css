@@ -84,23 +84,46 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 8px 20px rgba(251, 207, 232, 0.4);
 }
 
-/* Custom Scrollbar - Pink Theme */
-::-webkit-scrollbar {
+/* ============================================================
+   GLOBAL CUSTOM SCROLLBAR STYLING
+   Applies to every scrollable element (modals, tables, sidebars,
+   dropdowns, textareas, page containers, etc.)
+   ============================================================ */
+
+/* Firefox Standard Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #e11d48 #fff1f2;
+}
+
+/* WebKit & Blink Browsers (Chrome, Edge, Safari, Opera) */
+*::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
-  background: #fff5f7;
+*::-webkit-scrollbar-track {
+  background: #fff1f2;
+  border-radius: 9999px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #f472b6;
-  border-radius: 4px;
+*::-webkit-scrollbar-thumb {
+  background: #e11d48; /* Primary magenta/rose matching 'Save Expense' button */
+  border-radius: 9999px;
+  border: 2px solid #fff1f2;
+  transition: background-color 0.2s ease;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #e11d48;
+*::-webkit-scrollbar-thumb:hover {
+  background: #be123c; /* Slightly darker rose on hover */
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #9f1239; /* Deep rose on click/drag */
+}
+
+*::-webkit-scrollbar-corner {
+  background: #fff1f2;
 }
 
 /* Recharts Custom Tooltip Styling */
