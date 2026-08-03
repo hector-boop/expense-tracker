@@ -2,7 +2,7 @@ import { FaBars, FaPlus, FaTable, FaQuestionCircle, FaDownload } from 'react-ico
 
 export const Navbar = ({ onToggleSidebar, onOpenAddModal, onOpenTour, onOpenExport, title = 'Dashboard' }) => {
   return (
-    <header className="sticky top-0 z-30 h-18 bg-white/95 backdrop-blur-md border-b border-pink-200/80 px-4 lg:px-8 flex items-center justify-between transition-colors">
+    <header className="sticky top-0 z-20 h-18 bg-white/95 backdrop-blur-md border-b border-pink-200/80 px-4 lg:px-8 flex items-center justify-between transition-colors">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
