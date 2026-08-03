@@ -1,22 +1,29 @@
 import { supabase } from '../lib/supabase';
 import { expenseService } from './expenseService';
 
+const withTimeout = (promise, ms = 1500) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Fetch timeout')), ms))
+  ]);
+};
+
 const getActiveUser = async () => {
+  const savedDemoUser = localStorage.getItem('demo_user');
+  if (savedDemoUser) {
+    try {
+      const parsed = JSON.parse(savedDemoUser);
+      if (parsed) return parsed;
+    } catch { /* ignore */ }
+  }
+
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await withTimeout(supabase.auth.getUser(), 1500);
     if (user) return user;
   } catch (err) {
     console.warn('Supabase auth get user error:', err.message);
   }
 
-  const savedDemoUser = localStorage.getItem('demo_user');
-  if (savedDemoUser) {
-    try {
-      return JSON.parse(savedDemoUser);
-    } catch {
-      return null;
-    }
-  }
   return null;
 };
 
@@ -46,11 +53,13 @@ export const billService = {
     const activeUser = await getActiveUser();
     try {
       if (activeUser?.id && !activeUser.id.startsWith('usr_')) {
-        const { data, error } = await supabase
+        const queryPromise = supabase
           .from('incoming_bills')
           .select('*')
           .eq('user_id', activeUser.id)
           .order('created_at', { ascending: false });
+
+        const { data, error } = await withTimeout(queryPromise, 1500);
 
         if (error) throw error;
         if (data) return data;

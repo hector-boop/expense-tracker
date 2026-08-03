@@ -9,28 +9,37 @@ export const AuthProvider = ({ children }) => {
   const isRegisteringRef = useRef(false);
 
   useEffect(() => {
-    // Restore existing session on load so refreshing stays on current page
+    // Restore existing session on load so refreshing stays on current page instantly
     const getInitialSession = async () => {
+      // 1. Instant synchronous check from localStorage
+      const savedDemoUser = localStorage.getItem('demo_user');
+      if (savedDemoUser) {
+        try {
+          const parsed = JSON.parse(savedDemoUser);
+          if (parsed) {
+            setUser(parsed);
+            setLoading(false);
+          }
+        } catch {
+          localStorage.removeItem('demo_user');
+        }
+      }
+
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // 2. Fast timeout for Supabase cloud session check (1.5s max)
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Session fetch timeout')), 1500)
+        );
+
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
         if (session?.user) {
           setSession(session);
           setUser(session.user);
           localStorage.setItem('demo_user', JSON.stringify(session.user));
-        } else {
-          // Fallback to local demo user if offline or demo login
-          const savedDemoUser = localStorage.getItem('demo_user');
-          if (savedDemoUser) {
-            try {
-              const parsed = JSON.parse(savedDemoUser);
-              setUser(parsed);
-            } catch {
-              localStorage.removeItem('demo_user');
-            }
-          }
         }
       } catch (err) {
-        console.warn('Error fetching initial session:', err);
+        console.warn('Initial session check notice:', err.message);
       } finally {
         setLoading(false);
       }

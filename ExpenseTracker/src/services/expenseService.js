@@ -24,24 +24,30 @@ const sanitizeExpenseDate = (dStr) => {
   return dStr;
 };
 
+const withTimeout = (promise, ms = 1500) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Fetch timeout')), ms))
+  ]);
+};
+
 // Helper to get active user (either from Supabase session or demo_user in localStorage)
 const getActiveUser = async () => {
+  const savedDemoUser = localStorage.getItem('demo_user');
+  if (savedDemoUser) {
+    try {
+      const parsed = JSON.parse(savedDemoUser);
+      if (parsed) return parsed;
+    } catch { /* ignore */ }
+  }
+
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await withTimeout(supabase.auth.getUser(), 1500);
     if (user) return user;
   } catch (err) {
     console.warn('Supabase auth get user error:', err.message);
   }
 
-  // Fallback to local active session demo user
-  const savedDemoUser = localStorage.getItem('demo_user');
-  if (savedDemoUser) {
-    try {
-      return JSON.parse(savedDemoUser);
-    } catch {
-      return null;
-    }
-  }
   return null;
 };
 
@@ -96,11 +102,13 @@ export const expenseService = {
     const activeUser = await getActiveUser();
     try {
       if (activeUser?.id && !activeUser.id.startsWith('usr_')) {
-        const { data, error } = await supabase
+        const queryPromise = supabase
           .from('expenses')
           .select('*')
           .eq('user_id', activeUser.id)
           .order('expense_date', { ascending: false });
+
+        const { data, error } = await withTimeout(queryPromise, 1500);
 
         if (error) throw error;
         if (data) {
