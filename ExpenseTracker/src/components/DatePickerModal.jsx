@@ -88,7 +88,7 @@ export const DatePickerModal = ({
   return (
     <div 
       onClick={handleClose}
-      className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 pt-20 sm:pt-24 pb-6 overflow-y-auto bg-pink-950/40 backdrop-blur-xs ${
+      className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 pt-20 pb-4 overflow-hidden bg-pink-950/40 backdrop-blur-xs ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
     >
