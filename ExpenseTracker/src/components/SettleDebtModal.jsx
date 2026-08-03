@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { formatCurrency } from '../utils/formatters';
-import { FaDollarSign, FaCheckCircle, FaReceipt } from 'react-icons/fa';
+import { FaCheckCircle, FaReceipt } from 'react-icons/fa';
 
 export const SettleDebtModal = ({ isOpen, onClose, debt, onSettle }) => {
   const remainingBalance = debt ? Math.max(0, debt.amount - debt.amount_paid) : 0;
@@ -65,10 +65,10 @@ export const SettleDebtModal = ({ isOpen, onClose, debt, onSettle }) => {
         {/* Payment Amount Input */}
         <div>
           <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-            Payment Amount ($)
+            Payment Amount (₱) *
           </label>
           <div className="relative">
-            <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+            <span className="absolute left-3.5 top-2.5 text-rose-600 font-extrabold text-sm select-none">₱</span>
             <input
               type="number"
               step="0.01"

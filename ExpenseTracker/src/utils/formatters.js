@@ -16,12 +16,11 @@ import {
 
 export const formatCurrency = (amount, currency = 'PHP') => {
   const num = Number(amount) || 0;
-  return new Intl.NumberFormat('en-PH', {
-    style: 'currency',
-    currency,
+  const formatted = num.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(num);
+  });
+  return currency === 'PHP' ? `₱${formatted}` : `${currency} ${formatted}`;
 };
 
 export const formatDate = (dateString) => {

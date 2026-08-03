@@ -9,13 +9,31 @@ export const AuthProvider = ({ children }) => {
   const isRegisteringRef = useRef(false);
 
   useEffect(() => {
-    // Force sign out on every app load so users always start at login
+    // Restore existing session on load so refreshing stays on current page
     const getInitialSession = async () => {
       try {
-        await supabase.auth.signOut();
-      } catch { /* ignore */ }
-      localStorage.removeItem('demo_user');
-      setLoading(false);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setSession(session);
+          setUser(session.user);
+          localStorage.setItem('demo_user', JSON.stringify(session.user));
+        } else {
+          // Fallback to local demo user if offline or demo login
+          const savedDemoUser = localStorage.getItem('demo_user');
+          if (savedDemoUser) {
+            try {
+              const parsed = JSON.parse(savedDemoUser);
+              setUser(parsed);
+            } catch {
+              localStorage.removeItem('demo_user');
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Error fetching initial session:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getInitialSession();
@@ -31,9 +49,11 @@ export const AuthProvider = ({ children }) => {
       if (newSession?.user) {
         setSession(newSession);
         setUser(newSession.user);
+        localStorage.setItem('demo_user', JSON.stringify(newSession.user));
       } else if (_event === 'SIGNED_OUT') {
         setSession(null);
         setUser(null);
+        localStorage.removeItem('demo_user');
       }
       setLoading(false);
     });
@@ -154,10 +174,20 @@ export const AuthProvider = ({ children }) => {
       if (data?.user) {
         setUser(data.user);
         setSession(data.session);
+        localStorage.setItem('demo_user', JSON.stringify(data.user));
       }
       return { data, error: null };
     } catch (error) {
       console.warn('Supabase signIn notice:', error.message);
+
+      // Check fallback in local registered_users storage
+      const registered = JSON.parse(localStorage.getItem('registered_users') || '[]');
+      const match = registered.find(u => u.email === cleanEmail);
+      if (match) {
+        setUser(match);
+        localStorage.setItem('demo_user', JSON.stringify(match));
+        return { data: { user: match }, error: null };
+      }
       
       // Never reveal whether email or password was wrong
       return { 

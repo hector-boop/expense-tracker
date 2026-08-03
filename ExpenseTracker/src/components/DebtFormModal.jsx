@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { SubmitButton } from './SubmitButton';
-import { FaUser, FaTag, FaDollarSign, FaCalendarAlt, FaStickyNote, FaHandHoldingUsd, FaCoins } from 'react-icons/fa';
+import { DatePickerModal } from './DatePickerModal';
+import { formatDate } from '../utils/formatters';
+import { FaUser, FaTag, FaCalendarAlt, FaStickyNote, FaHandHoldingUsd, FaCoins, FaChevronDown } from 'react-icons/fa';
 
 export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
   const [type, setType] = useState(initialData?.type || 'i_owe');
@@ -13,6 +15,7 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
   const [notes, setNotes] = useState(initialData?.notes || '');
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const validate = () => {
     const newErrors = {};
@@ -81,7 +84,7 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
               }`}
             >
               <FaCoins className={`w-3.5 h-3.5 ${type === 'i_owe' ? 'text-white' : 'text-rose-600'}`} />
-              <span>I Owe (Payable)</span>
+              <span>I Owe </span>
             </button>
             <button
               type="button"
@@ -93,7 +96,7 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
               }`}
             >
               <FaHandHoldingUsd className={`w-3.5 h-3.5 ${type === 'owed_to_me' ? 'text-white' : 'text-rose-600'}`} />
-              <span>Owed to Me (Receivable)</span>
+              <span>Owed to Me </span>
             </button>
           </div>
         </div>
@@ -101,13 +104,13 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
         {/* Person / Contact */}
         <div>
           <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-            {type === 'i_owe' ? 'Creditor (Who do you owe?)' : 'Debtor (Who owes you?)'}
+            {type === 'i_owe' ? 'Creditor ' : 'Debtor'}
           </label>
           <div className="relative">
             <FaUser className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
             <input
               type="text"
-              placeholder={type === 'i_owe' ? 'e.g. John Doe, Credit Card, Bank' : 'e.g. Sarah Smith, Alex'}
+              placeholder={type === 'i_owe' ? 'Who do you owe?' : 'Who owes you?'}
               value={person}
               onChange={(e) => setPerson(e.target.value)}
               className={`w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 placeholder-rose-400 font-bold ${
@@ -142,10 +145,10 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-              Total Amount ($)
+              Total Amount (₱) *
             </label>
             <div className="relative">
-              <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+              <span className="absolute left-3.5 top-2.5 text-rose-600 font-extrabold text-sm select-none">₱</span>
               <input
                 type="number"
                 step="0.01"
@@ -163,10 +166,10 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
 
           <div>
             <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
-              Already Paid ($)
+              Already Paid (₱)
             </label>
             <div className="relative">
-              <FaDollarSign className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
+              <span className="absolute left-3.5 top-2.5 text-rose-600 font-extrabold text-sm select-none">₱</span>
               <input
                 type="number"
                 step="0.01"
@@ -188,14 +191,19 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
           <label className="block text-xs font-bold text-rose-900 uppercase tracking-wider mb-1">
             Due Date (Optional)
           </label>
-          <div className="relative">
+          <div 
+            onClick={() => setIsDatePickerOpen(true)}
+            className="relative cursor-pointer"
+          >
             <FaCalendarAlt className="absolute left-3.5 top-3.5 text-rose-600 w-3.5 h-3.5" />
             <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-sm bg-pink-50/50 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold"
+              type="text"
+              readOnly
+              value={dueDate ? formatDate(dueDate) : ''}
+              placeholder="Select due date..."
+              className="w-full pl-10 pr-10 py-2.5 text-sm bg-pink-50/50 border-2 border-pink-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white text-rose-950 font-bold placeholder-rose-400 cursor-pointer"
             />
+            <FaChevronDown className="absolute right-3.5 top-3.5 text-pink-400 w-3.5 h-3.5 pointer-events-none" />
           </div>
         </div>
 
@@ -233,6 +241,16 @@ export const DebtFormModal = ({ isOpen, onClose, initialData, onSubmit }) => {
           </SubmitButton>
         </div>
       </form>
+
+      {/* Custom Pink Date Picker Modal */}
+      <DatePickerModal
+        isOpen={isDatePickerOpen}
+        onClose={() => setIsDatePickerOpen(false)}
+        selectedDate={dueDate}
+        onSelectDate={(d) => setDueDate(d)}
+        title="Select Due Date"
+        maxDate={null}
+      />
     </Modal>
   );
 };
