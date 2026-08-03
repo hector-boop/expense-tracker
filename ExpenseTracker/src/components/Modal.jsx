@@ -31,7 +31,7 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
   return (
     <div 
       onClick={handleClose}
-      className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 pt-20 sm:pt-22 pb-4 overflow-hidden bg-pink-950/40 backdrop-blur-xs ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 pt-20 sm:pt-22 pb-4 overflow-hidden bg-pink-950/50 backdrop-blur-md ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
     >
