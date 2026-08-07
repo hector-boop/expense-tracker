@@ -3,3 +3,11 @@
 *.docx
 hci_report*
 package-lock.json
+.agents/AGENTS.md
+.agents/rules/antigravity-rtk-rules.md
+.agents/skills/ponytail/SKILL.md
+.agents/skills/ponytail-audit/SKILL.md
+.agents/skills/ponytail-debt/SKILL.md
+.agents/skills/ponytail-gain/SKILL.md
+.agents/skills/ponytail-help/SKILL.md
+.agents/skills/ponytail-review/SKILL.md

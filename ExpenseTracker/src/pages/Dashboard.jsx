@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { SummaryCards } from '../components/SummaryCards';
+import { BudgetOverviewCard } from '../components/BudgetOverviewCard';
 import { IncomingBillsSection } from '../components/IncomingBillsSection';
 import { Charts } from '../components/Charts';
 import { ExpenseTable } from '../components/ExpenseTable';
@@ -12,11 +13,13 @@ import { OnboardingModal } from '../components/OnboardingModal';
 import { ExportModal } from '../components/ExportModal';
 import { useAuth } from '../hooks/useAuth';
 import { expenseService } from '../services/expenseService';
+import { budgetService } from '../services/budgetService';
 import { FaArrowRight } from 'react-icons/fa';
 
 export const Dashboard = () => {
   const { user } = useAuth();
   const [expenses, setExpenses] = useState([]);
+  const [budget, setBudget] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
@@ -54,6 +57,15 @@ export const Dashboard = () => {
     try {
       const data = await expenseService.getExpenses();
       setExpenses(data || []);
+      if (budget) {
+        const summary = budgetService.getSpendingSummary(data || [], budget);
+        if (summary.isOverBudget) {
+          setToast({
+            message: `🚨 Over Budget Alert: You have overspent by ₱${summary.overspendAmount.toLocaleString()} this ${summary.period}!`,
+            type: 'error'
+          });
+        }
+      }
     } catch (err) {
       console.error('Failed to fetch expenses:', err);
       setToast({ message: 'Failed to load expenses', type: 'error' });
@@ -62,9 +74,13 @@ export const Dashboard = () => {
 
   useEffect(() => {
     let mounted = true;
-    expenseService.getExpenses().then((data) => {
+    Promise.all([
+      expenseService.getExpenses(),
+      budgetService.getBudget()
+    ]).then(([data, budgetData]) => {
       if (mounted) {
         setExpenses(data || []);
+        setBudget(budgetData || null);
         setLoading(false);
       }
     }).catch(err => {
@@ -134,6 +150,11 @@ export const Dashboard = () => {
     >
       {/* 1. Summary Cards */}
       <SummaryCards expenses={expenses} isLoading={loading} />
+
+      {/* 1.5. Budget / Salary Overview Card */}
+      <div className="pt-2">
+        <BudgetOverviewCard expenses={expenses} budget={budget} isLoading={loading} />
+      </div>
 
       {/* 2. Incoming Bills Tracker Section */}
       <div className="pt-2">
@@ -209,6 +230,7 @@ export const Dashboard = () => {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         expenses={expenses}
+        budget={budget}
         defaultTitle="Expense Tracker Summary Report"
       />
 

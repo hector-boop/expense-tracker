@@ -17,7 +17,8 @@ export const ExportModal = ({
   debts, 
   dataType = 'expenses', 
   defaultTitle, 
-  modalTitle 
+  modalTitle,
+  budget = null 
 }) => {
   const [exportFormat, setExportFormat] = useState('pdf'); // 'pdf' | 'csv' | 'docx'
   const [isExporting, setIsExporting] = useState(false);
@@ -55,11 +56,11 @@ export const ExportModal = ({
         }
       } else {
         if (exportFormat === 'pdf') {
-          success = exportToPDF(dataList, `expense_tracker_${dateStr}.pdf`, reportHeader);
+          success = exportToPDF(dataList, `expense_tracker_${dateStr}.pdf`, reportHeader, budget);
         } else if (exportFormat === 'csv') {
           success = exportToCSV(dataList, `expense_tracker_${dateStr}.csv`);
         } else if (exportFormat === 'docx') {
-          success = await exportToDOCX(dataList, `expense_tracker_${dateStr}.docx`, reportHeader);
+          success = await exportToDOCX(dataList, `expense_tracker_${dateStr}.docx`, reportHeader, budget);
         }
       }
 

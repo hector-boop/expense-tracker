@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useAuth } from '../hooks/useAuth';
 import { DEFAULT_CATEGORIES, expenseService } from '../services/expenseService';
+import { budgetService } from '../services/budgetService';
 import { Toast } from '../components/Toast';
 import { Modal } from '../components/Modal';
 import { OnboardingModal } from '../components/OnboardingModal';
@@ -24,7 +25,8 @@ import {
   FaDownload,
   FaCamera,
   FaHeart,
-  FaCrop
+  FaCrop,
+  FaWallet
 } from 'react-icons/fa';
 
 export const Settings = () => {
@@ -59,9 +61,44 @@ export const Settings = () => {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [expenses, setExpenses] = useState([]);
 
+  // Budget State
+  const [budgetObj, setBudgetObj] = useState(null);
+  const [budgetAmount, setBudgetAmount] = useState('');
+  const [budgetPeriod, setBudgetPeriod] = useState('monthly');
+  const [budgetError, setBudgetError] = useState('');
+  const [isSavingBudget, setIsSavingBudget] = useState(false);
+
   useEffect(() => {
     expenseService.getExpenses().then(data => setExpenses(data || [])).catch(() => {});
+    budgetService.getBudget().then(bgt => {
+      if (bgt) {
+        setBudgetObj(bgt);
+        setBudgetAmount(bgt.amount ? String(bgt.amount) : '');
+        setBudgetPeriod(bgt.period || 'monthly');
+      }
+    }).catch(() => {});
   }, []);
+
+  const handleSaveBudget = async (e) => {
+    e.preventDefault();
+    setBudgetError('');
+    const parsed = parseFloat(budgetAmount);
+    if (isNaN(parsed) || parsed <= 0) {
+      setBudgetError('Please enter a valid positive budget amount');
+      return;
+    }
+    setIsSavingBudget(true);
+    try {
+      const updated = await budgetService.setBudget({ amount: parsed, period: budgetPeriod });
+      setBudgetObj(updated);
+      setToast({ message: 'Salary / Budget limit saved successfully!', type: 'success' });
+    } catch (err) {
+      console.error('Failed to save budget:', err);
+      setToast({ message: 'Failed to save budget', type: 'error' });
+    } finally {
+      setIsSavingBudget(false);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem(storageCategoryKey, JSON.stringify(customCategories));
@@ -437,6 +474,88 @@ export const Settings = () => {
           )}
         </div>
 
+        {/* 3.5. Salary / Budget Setup Card */}
+        <div className="clean-pink-card p-6 space-y-4 bg-white">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-pink-100 text-rose-600 border border-pink-200">
+              <FaWallet className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-rose-900 font-cursive">Salary / Budget Settings</h3>
+              <p className="text-xs text-rose-700 font-bold uppercase tracking-wide">
+                Set income or spending limits to monitor overspending
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveBudget} noValidate className="space-y-4 text-xs font-bold uppercase">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-rose-900 mb-1">
+                  Budget / Salary Limit (₱) *
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-3 text-pink-400 font-extrabold text-sm select-none">
+                    ₱
+                  </span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={budgetAmount}
+                    onChange={(e) => {
+                      setBudgetAmount(e.target.value);
+                      if (budgetError) setBudgetError('');
+                    }}
+                    placeholder="e.g. 50000"
+                    className={`w-full pl-9 pr-4 py-2.5 rounded-2xl border-2 bg-white text-rose-900 focus:outline-hidden focus:ring-2 font-bold ${
+                      budgetError
+                        ? 'border-red-500 ring-2 ring-red-200 bg-red-50/20'
+                        : 'border-pink-300 focus:ring-rose-500'
+                    }`}
+                  />
+                </div>
+                {budgetError && (
+                  <p className="mt-1.5 flex items-center gap-1 text-[11px] font-extrabold text-red-600 tracking-wide uppercase">
+                    <FaExclamationCircle className="w-3 h-3 text-red-600 shrink-0" />
+                    <span>{budgetError}</span>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-rose-900 mb-1">
+                  Budget Period
+                </label>
+                <select
+                  value={budgetPeriod}
+                  onChange={(e) => setBudgetPeriod(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-2xl border-2 border-pink-300 bg-white text-rose-900 font-bold focus:outline-hidden focus:ring-2 focus:ring-rose-500 cursor-pointer"
+                >
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end pt-2">
+              <button
+                type="submit"
+                disabled={isSavingBudget}
+                className="flex items-center gap-2 px-6 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-2xl shadow-md border-2 border-rose-700 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {isSavingBudget ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <FaCheck className="w-3.5 h-3.5" />
+                )}
+                <span>Save Budget</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
         {/* 4. Export Spreadsheet Data Card */}
         <div className="clean-pink-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white border-2 border-pink-300">
           <div className="flex items-center gap-3">
@@ -566,6 +685,7 @@ export const Settings = () => {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         expenses={expenses}
+        budget={budgetObj}
         defaultTitle="Expense Tracker Complete Account Report"
       />
 

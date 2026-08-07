@@ -29,7 +29,7 @@ export const exportToCSV = (expenses, filename = 'expense_tracker_export.csv') =
 /**
  * Export expenses to PDF file
  */
-export const exportToPDF = (expenses, filename = 'expense_tracker_report.pdf', title = 'Expense Tracker Report') => {
+export const exportToPDF = (expenses, filename = 'expense_tracker_report.pdf', title = 'Expense Tracker Report', budget = null) => {
   if (!expenses || expenses.length === 0) return false;
 
   const doc = new jsPDF();
@@ -45,9 +45,17 @@ export const exportToPDF = (expenses, filename = 'expense_tracker_report.pdf', t
 
   // Total summary
   const totalAmount = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
-  doc.setFontSize(11);
+  let summaryText = `Total Entries: ${expenses.length}  |  Total Expenses: PHP ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  if (budget?.amount && Number(budget.amount) > 0) {
+    const bAmt = Number(budget.amount);
+    const period = budget.period || 'monthly';
+    const percent = ((totalAmount / bAmt) * 100).toFixed(0);
+    summaryText += `  |  ${period.toUpperCase()} BUDGET: PHP ${bAmt.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${percent}% used)`;
+  }
+
+  doc.setFontSize(9);
   doc.setTextColor(30, 41, 59);
-  doc.text(`Total Entries: ${expenses.length}  |  Total Expenses: PHP ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 14, 34);
+  doc.text(summaryText, 14, 34);
 
   // Table columns & rows
   const tableColumn = ['#', 'Title', 'Category', 'Amount (PHP)', 'Payment', 'Date'];
@@ -86,10 +94,17 @@ export const exportToPDF = (expenses, filename = 'expense_tracker_report.pdf', t
 /**
  * Export expenses to DOCX file
  */
-export const exportToDOCX = async (expenses, filename = 'expense_tracker_report.docx', title = 'Expense Tracker Report') => {
+export const exportToDOCX = async (expenses, filename = 'expense_tracker_report.docx', title = 'Expense Tracker Report', budget = null) => {
   if (!expenses || expenses.length === 0) return false;
 
   const totalAmount = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+  let summaryText = `Generated: ${new Date().toLocaleDateString('en-US', { dateStyle: 'full' })}  |  Total Entries: ${expenses.length}  |  Total: PHP ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  if (budget?.amount && Number(budget.amount) > 0) {
+    const bAmt = Number(budget.amount);
+    const period = budget.period || 'monthly';
+    const percent = ((totalAmount / bAmt) * 100).toFixed(0);
+    summaryText += `  |  ${period.toUpperCase()} BUDGET: PHP ${bAmt.toLocaleString('en-US', { minimumFractionDigits: 2 })} (${percent}% used)`;
+  }
 
   const tableHeaderRow = new TableRow({
     children: ['#', 'Title', 'Category', 'Amount (PHP)', 'Payment', 'Date'].map(headerText => (
@@ -139,7 +154,7 @@ export const exportToDOCX = async (expenses, filename = 'expense_tracker_report.
         new Paragraph({
           children: [
             new TextRun({
-              text: `Generated: ${new Date().toLocaleDateString('en-US', { dateStyle: 'full' })}  |  Total Entries: ${expenses.length}  |  Total: PHP ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+              text: summaryText,
               bold: true,
               size: 20,
               color: '475569'
