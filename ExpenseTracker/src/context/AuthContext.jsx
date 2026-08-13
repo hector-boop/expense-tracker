@@ -188,15 +188,6 @@ export const AuthProvider = ({ children }) => {
       return { data, error: null };
     } catch (error) {
       console.warn('Supabase signIn notice:', error.message);
-
-      // Check fallback in local registered_users storage
-      const registered = JSON.parse(localStorage.getItem('registered_users') || '[]');
-      const match = registered.find(u => u.email === cleanEmail);
-      if (match) {
-        setUser(match);
-        localStorage.setItem('demo_user', JSON.stringify(match));
-        return { data: { user: match }, error: null };
-      }
       
       // Never reveal whether email or password was wrong
       return { 

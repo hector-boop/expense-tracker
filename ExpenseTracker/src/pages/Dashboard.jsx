@@ -14,7 +14,7 @@ import { ExportModal } from '../components/ExportModal';
 import { useAuth } from '../hooks/useAuth';
 import { expenseService } from '../services/expenseService';
 import { budgetService } from '../services/budgetService';
-import { FaArrowRight } from 'react-icons/fa';
+import { FaArrowRight, FaCheck } from 'react-icons/fa';
 
 export const Dashboard = () => {
   const { user } = useAuth();
@@ -26,6 +26,11 @@ export const Dashboard = () => {
   const [toast, setToast] = useState({ message: '', type: 'success' });
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
+  const [budgetFormAmount, setBudgetFormAmount] = useState('');
+  const [budgetFormPeriod, setBudgetFormPeriod] = useState('monthly');
+  const [isSavingBudget, setIsSavingBudget] = useState(false);
+  const [budgetError, setBudgetError] = useState('');
 
   const navigate = useNavigate();
 
@@ -93,6 +98,35 @@ export const Dashboard = () => {
     };
   }, []);
 
+  const handleOpenBudgetModal = () => {
+    setBudgetFormAmount(budget?.amount ? String(budget.amount) : '');
+    setBudgetFormPeriod(budget?.period || 'monthly');
+    setBudgetError('');
+    setIsBudgetModalOpen(true);
+  };
+
+  const handleSaveBudgetModal = async (e) => {
+    e.preventDefault();
+    setBudgetError('');
+    const parsed = parseFloat(budgetFormAmount);
+    if (isNaN(parsed) || parsed <= 0) {
+      setBudgetError('Please enter a valid positive budget amount');
+      return;
+    }
+    setIsSavingBudget(true);
+    try {
+      const updated = await budgetService.setBudget({ amount: parsed, period: budgetFormPeriod });
+      setBudget(updated);
+      setIsBudgetModalOpen(false);
+      setToast({ message: 'Budget saved successfully!', type: 'success' });
+    } catch (err) {
+      console.error('Failed to save budget:', err);
+      setToast({ message: 'Failed to save budget', type: 'error' });
+    } finally {
+      setIsSavingBudget(false);
+    }
+  };
+
   const handleCreateOrUpdate = async (formData) => {
     try {
       if (editingExpense) {
@@ -153,7 +187,7 @@ export const Dashboard = () => {
 
       {/* 1.5. Budget / Salary Overview Card */}
       <div className="pt-2">
-        <BudgetOverviewCard expenses={expenses} budget={budget} isLoading={loading} />
+        <BudgetOverviewCard expenses={expenses} budget={budget} isLoading={loading} onEditBudget={handleOpenBudgetModal} />
       </div>
 
       {/* 2. Incoming Bills Tracker Section */}
@@ -197,6 +231,65 @@ export const Dashboard = () => {
           onDeleteMultiple={handleDeleteMultiple}
         />
       </div>
+
+      {/* Budget Edit Modal */}
+      <Modal
+        isOpen={isBudgetModalOpen}
+        onClose={() => setIsBudgetModalOpen(false)}
+        title="Edit Budget"
+      >
+        <form onSubmit={handleSaveBudgetModal} noValidate className="space-y-4 text-xs font-bold uppercase">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-rose-900 mb-1">Budget / Salary Limit (₱) *</label>
+              <div className="relative">
+                <span className="absolute left-4 top-3 text-pink-400 font-extrabold text-sm select-none">₱</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={budgetFormAmount}
+                  onChange={(e) => { setBudgetFormAmount(e.target.value); setBudgetError(''); }}
+                  placeholder="e.g. 50000"
+                  className={`w-full pl-9 pr-4 py-2.5 rounded-2xl border-2 bg-white text-rose-900 focus:outline-none focus:ring-2 font-bold ${
+                    budgetError ? 'border-red-500 ring-2 ring-red-200' : 'border-pink-300 focus:ring-rose-500'
+                  }`}
+                  autoFocus
+                />
+              </div>
+              {budgetError && (
+                <p className="mt-1.5 text-[11px] font-extrabold text-red-600 tracking-wide uppercase">{budgetError}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-rose-900 mb-1">Budget Period</label>
+              <select
+                value={budgetFormPeriod}
+                onChange={(e) => setBudgetFormPeriod(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-2xl border-2 border-pink-300 bg-white text-rose-900 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500 cursor-pointer"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex items-center justify-end pt-2">
+            <button
+              type="submit"
+              disabled={isSavingBudget}
+              className="flex items-center gap-2 px-6 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-2xl shadow-md border-2 border-rose-700 transition-all cursor-pointer"
+            >
+              {isSavingBudget ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <FaCheck className="w-3.5 h-3.5" />
+              )}
+              <span>Save Budget</span>
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Add / Edit Expense Modal */}
       <Modal

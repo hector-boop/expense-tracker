@@ -16,16 +16,31 @@ export const WanderingDuck = () => {
   const [isDisabled, setIsDisabled] = useState(() => {
     return localStorage.getItem('pet_duck_disabled') !== 'false';
   });
+  const [petType, setPetType] = useState(() => localStorage.getItem('pet_type') || 'duck');
   const [isLeaving, setIsLeaving] = useState(false);
   const [isEntering, setIsEntering] = useState(false);
-  const [posX, setPosX] = useState(15); // Percentage offset within main content area (5% to 70%)
-  const [direction, setDirection] = useState('right'); // 'right' | 'left'
+  const [posX, setPosX] = useState(15);
+  const [direction, setDirection] = useState('right');
   const [isWalking, setIsWalking] = useState(true);
   const [isHopping, setIsHopping] = useState(false);
   const [speech, setSpeech] = useState('Quack!');
   const [speechVisible, setSpeechVisible] = useState(false);
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024);
   const speechTimerRef = useRef(null);
+
+  // Listen for pet type change
+  useEffect(() => {
+    const handleTypeChange = () => {
+      const newType = localStorage.getItem('pet_type') || 'duck';
+      setPetType(newType);
+      setSpeech(newType === 'cat' ? 'Meow! 🐱' : 'Quack! 🐥');
+      setSpeechVisible(true);
+      if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
+      speechTimerRef.current = setTimeout(() => setSpeechVisible(false), 3000);
+    };
+    window.addEventListener('pet_type_change', handleTypeChange);
+    return () => window.removeEventListener('pet_type_change', handleTypeChange);
+  }, []);
 
   // Listen for sidebar pet toggle event with animation
   useEffect(() => {
@@ -151,7 +166,7 @@ export const WanderingDuck = () => {
           </div>
         )}
 
-        {/* Cute 2D Front-Facing Wandering Duck SVG */}
+        {/* Cute 2D Front-Facing Wandering Pet SVG */}
         <div
           className={`transition-transform duration-300 ${
             isLeaving
@@ -165,48 +180,107 @@ export const WanderingDuck = () => {
               : ''
           }`}
         >
-          <svg
-            width="64"
-            height="64"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="drop-shadow-xl transform hover:scale-115 transition-transform"
-          >
-            {/* Left & Right Webbed Feet */}
-            <ellipse cx="36" cy="86" rx="9" ry="5" fill="#F97316" className={isWalking ? 'animate-pulse' : ''} />
-            <ellipse cx="64" cy="86" rx="9" ry="5" fill="#F97316" className={isWalking ? 'animate-pulse' : ''} />
+          {petType === 'cat' ? (
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="drop-shadow-xl transform hover:scale-115 transition-transform"
+            >
+              {/* Paws */}
+              <ellipse cx="36" cy="87" rx="8" ry="5" fill="#E8E8E8" stroke="#D0D0D0" strokeWidth="1.5" className={isWalking ? 'animate-pulse' : ''} />
+              <ellipse cx="64" cy="87" rx="8" ry="5" fill="#E8E8E8" stroke="#D0D0D0" strokeWidth="1.5" className={isWalking ? 'animate-pulse' : ''} />
 
-            {/* Main Round Yellow Body (Front-Facing) */}
-            <circle cx="50" cy="62" r="26" fill="#FDE047" stroke="#EAB308" strokeWidth="3" />
-            <ellipse cx="50" cy="66" rx="16" ry="12" fill="#FEF08A" opacity="0.6" />
+              {/* Body */}
+              <ellipse cx="50" cy="66" rx="26" ry="22" fill="#F5F5F5" stroke="#DCDCDC" strokeWidth="2" />
+              {/* Belly patch */}
+              <ellipse cx="50" cy="70" rx="14" ry="11" fill="#FFFFFF" opacity="0.8" />
 
-            {/* Left & Right Flapping Wings (Front-Facing) */}
-            <path d="M 24 55 Q 12 60 22 72 Q 28 68 26 58 Z" fill="#FACC15" stroke="#EAB308" strokeWidth="2" />
-            <path d="M 76 55 Q 88 60 78 72 Q 72 68 74 58 Z" fill="#FACC15" stroke="#EAB308" strokeWidth="2" />
+              {/* Tail */}
+              <path d="M 74 75 Q 95 65 90 50 Q 88 44 82 50 Q 87 55 76 68 Z" fill="#F0F0F0" stroke="#DCDCDC" strokeWidth="1.5" />
 
-            {/* Head (Front-Facing) */}
-            <circle cx="50" cy="38" r="22" fill="#FDE047" stroke="#EAB308" strokeWidth="3" />
+              {/* Head */}
+              <circle cx="50" cy="38" r="24" fill="#F5F5F5" stroke="#DCDCDC" strokeWidth="2" />
 
-            {/* Big Shiny Eyes Looking Straight at the User */}
-            <circle cx="38" cy="34" r="4.5" fill="#1E293B" />
-            <circle cx="40" cy="32" r="1.8" fill="#FFFFFF" />
+              {/* Pointy ears */}
+              <polygon points="26,22 20,4 36,16" fill="#F0F0F0" stroke="#DCDCDC" strokeWidth="2" />
+              <polygon points="74,22 80,4 64,16" fill="#F0F0F0" stroke="#DCDCDC" strokeWidth="2" />
+              {/* Inner ear pink */}
+              <polygon points="27,21 22,8 34,17" fill="#F9A8D4" opacity="0.7" />
+              <polygon points="73,21 78,8 66,17" fill="#F9A8D4" opacity="0.7" />
 
-            <circle cx="62" cy="34" r="4.5" fill="#1E293B" />
-            <circle cx="64" cy="32" r="1.8" fill="#FFFFFF" />
+              {/* Eyes — left green, right yellow */}
+              <ellipse cx="38" cy="36" rx="5.5" ry="6" fill="#22C55E" />
+              <ellipse cx="38" cy="36" rx="2.5" ry="5" fill="#1E293B" />
+              <circle cx="36" cy="33" r="1.5" fill="#FFFFFF" />
 
-            {/* Cute Rosy Blushing Cheeks */}
-            <circle cx="27" cy="42" r="4.5" fill="#F472B6" opacity="0.85" />
-            <circle cx="73" cy="42" r="4.5" fill="#F472B6" opacity="0.85" />
+              <ellipse cx="62" cy="36" rx="5.5" ry="6" fill="#EAB308" />
+              <ellipse cx="62" cy="36" rx="2.5" ry="5" fill="#1E293B" />
+              <circle cx="60" cy="33" r="1.5" fill="#FFFFFF" />
 
-            {/* Front-Facing Orange Beak */}
-            <ellipse cx="50" cy="44" rx="8" ry="5" fill="#FB923C" stroke="#EA580C" strokeWidth="2" />
+              {/* Rosy cheeks */}
+              <circle cx="27" cy="44" r="4" fill="#F472B6" opacity="0.6" />
+              <circle cx="73" cy="44" r="4" fill="#F472B6" opacity="0.6" />
 
-            {/* Cute Red Bowknot Top Center */}
-            <path d="M 42 16 Q 50 20 42 24 Z" fill="#E11D48" />
-            <path d="M 58 16 Q 50 20 58 24 Z" fill="#E11D48" />
-            <circle cx="50" cy="20" r="3.5" fill="#BE123C" />
-          </svg>
+              {/* Nose */}
+              <polygon points="50,46 47,50 53,50" fill="#F9A8D4" />
+              {/* Mouth */}
+              <path d="M 47 50 Q 50 54 53 50" stroke="#DCDCDC" strokeWidth="1.5" fill="none" />
+
+              {/* Whiskers */}
+              <line x1="20" y1="44" x2="44" y2="46" stroke="#BDBDBD" strokeWidth="1.2" />
+              <line x1="20" y1="48" x2="44" y2="48" stroke="#BDBDBD" strokeWidth="1.2" />
+              <line x1="56" y1="46" x2="80" y2="44" stroke="#BDBDBD" strokeWidth="1.2" />
+              <line x1="56" y1="48" x2="80" y2="48" stroke="#BDBDBD" strokeWidth="1.2" />
+
+
+            </svg>
+          ) : (
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="drop-shadow-xl transform hover:scale-115 transition-transform"
+            >
+              {/* Left & Right Webbed Feet */}
+              <ellipse cx="36" cy="86" rx="9" ry="5" fill="#F97316" className={isWalking ? 'animate-pulse' : ''} />
+              <ellipse cx="64" cy="86" rx="9" ry="5" fill="#F97316" className={isWalking ? 'animate-pulse' : ''} />
+
+              {/* Main Round Yellow Body (Front-Facing) */}
+              <circle cx="50" cy="62" r="26" fill="#FDE047" stroke="#EAB308" strokeWidth="3" />
+              <ellipse cx="50" cy="66" rx="16" ry="12" fill="#FEF08A" opacity="0.6" />
+
+              {/* Left & Right Flapping Wings (Front-Facing) */}
+              <path d="M 24 55 Q 12 60 22 72 Q 28 68 26 58 Z" fill="#FACC15" stroke="#EAB308" strokeWidth="2" />
+              <path d="M 76 55 Q 88 60 78 72 Q 72 68 74 58 Z" fill="#FACC15" stroke="#EAB308" strokeWidth="2" />
+
+              {/* Head (Front-Facing) */}
+              <circle cx="50" cy="38" r="22" fill="#FDE047" stroke="#EAB308" strokeWidth="3" />
+
+              {/* Big Shiny Eyes Looking Straight at the User */}
+              <circle cx="38" cy="34" r="4.5" fill="#1E293B" />
+              <circle cx="40" cy="32" r="1.8" fill="#FFFFFF" />
+
+              <circle cx="62" cy="34" r="4.5" fill="#1E293B" />
+              <circle cx="64" cy="32" r="1.8" fill="#FFFFFF" />
+
+              {/* Cute Rosy Blushing Cheeks */}
+              <circle cx="27" cy="42" r="4.5" fill="#F472B6" opacity="0.85" />
+              <circle cx="73" cy="42" r="4.5" fill="#F472B6" opacity="0.85" />
+
+              {/* Front-Facing Orange Beak */}
+              <ellipse cx="50" cy="44" rx="8" ry="5" fill="#FB923C" stroke="#EA580C" strokeWidth="2" />
+
+              {/* Cute Red Bowknot Top Center */}
+              <path d="M 42 16 Q 50 20 42 24 Z" fill="#E11D48" />
+              <path d="M 58 16 Q 50 20 58 24 Z" fill="#E11D48" />
+              <circle cx="50" cy="20" r="3.5" fill="#BE123C" />
+            </svg>
+          )}
         </div>
       </div>
     </div>

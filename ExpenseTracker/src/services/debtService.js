@@ -182,7 +182,12 @@ export const debtService = {
     if (index !== -1) {
       const updatedDebt = {
         ...local[index],
-        ...updatedFields,
+        person: updatedFields.person ? String(updatedFields.person).trim() : local[index].person,
+        title: updatedFields.title !== undefined ? String(updatedFields.title).trim() : local[index].title,
+        type: updatedFields.type || local[index].type,
+        due_date: updatedFields.due_date || local[index].due_date,
+        notes: updatedFields.notes !== undefined ? String(updatedFields.notes).trim() : local[index].notes,
+        category: updatedFields.category || local[index].category,
         amount,
         amount_paid: amountPaid,
         status,

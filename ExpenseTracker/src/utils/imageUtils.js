@@ -2,14 +2,22 @@ import { supabase } from '../lib/supabase';
 
 const BUCKET = 'expense-photos';
 
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+
 /**
  * Utility to compress and convert images to Base64 JPEG data URLs
  * Keeps file sizes minimal so localStorage & network payloads stay light.
  */
 export const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.8) => {
   return new Promise((resolve, reject) => {
-    if (!file || !file.type.startsWith('image/')) {
-      reject(new Error('Invalid image file'));
+    if (!file || !file.type || !ALLOWED_MIME_TYPES.includes(file.type.toLowerCase())) {
+      reject(new Error('Invalid image file type. Allowed: JPG, PNG, WEBP, GIF.'));
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      reject(new Error('File size exceeds maximum allowed limit of 5MB.'));
       return;
     }
 
@@ -64,6 +72,15 @@ export const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0
  * @returns {Promise<string>} URL to store in the expense photos array
  */
 export const uploadPhotoToStorage = async (file, userId) => {
+  // Validate file type and size before processing
+  if (!file || !file.type || !ALLOWED_MIME_TYPES.includes(file.type.toLowerCase())) {
+    throw new Error('Invalid image type. Allowed: JPG, PNG, WEBP, GIF.');
+  }
+
+  if (file.size > MAX_FILE_SIZE_BYTES) {
+    throw new Error('File size exceeds maximum limit of 5MB.');
+  }
+
   // Compress first regardless of destination
   const base64 = await compressImage(file, 800, 800, 0.8);
 
@@ -77,8 +94,10 @@ export const uploadPhotoToStorage = async (file, userId) => {
     const res = await fetch(base64);
     const blob = await res.blob();
 
-    const ext = file.name.split('.').pop() || 'jpg';
-    const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const rawExt = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const ext = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(rawExt) ? rawExt : 'jpg';
+    const cleanUserId = userId.replace(/[^a-zA-Z0-9_-]/g, '');
+    const path = `${cleanUserId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
@@ -86,10 +105,10 @@ export const uploadPhotoToStorage = async (file, userId) => {
 
     if (uploadError) throw uploadError;
 
-    // Create a long-lived signed URL (10 years)
+    // Create a 24-hour signed URL (86400s)
     const { data: signed, error: signError } = await supabase.storage
       .from(BUCKET)
-      .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+      .createSignedUrl(path, 60 * 60 * 24);
 
     if (signError) throw signError;
     return signed.signedUrl;

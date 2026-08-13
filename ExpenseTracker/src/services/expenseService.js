@@ -82,18 +82,16 @@ const saveLocalExpensesForUser = (user, expenses) => {
 };
 
 export const expenseService = {
-  // Clear all local data across all accounts
-  clearAllAccountData() {
+  // Clear local data for the active authenticated user account
+  async clearAllAccountData() {
     if (typeof window !== 'undefined' && window.localStorage) {
-      Object.keys(localStorage).forEach(key => {
-        if (
-          key.startsWith('tracker_expenses_') || 
-          key.startsWith('custom_categories_') || 
-          key === 'tracker_expenses_fallback'
-        ) {
-          localStorage.removeItem(key);
-        }
-      });
+      const activeUser = await getActiveUser();
+      const userKey = activeUser?.id || activeUser?.email || 'guest';
+      localStorage.removeItem(`tracker_expenses_${userKey}`);
+      localStorage.removeItem(`custom_categories_${userKey}`);
+      localStorage.removeItem(`tracker_debts_${userKey}`);
+      localStorage.removeItem(`tracker_bills_${userKey}`);
+      localStorage.removeItem(`tracker_budget_${userKey}`);
     }
   },
 
@@ -214,11 +212,14 @@ export const expenseService = {
     if (index !== -1) {
       local[index] = { 
         ...local[index], 
-        ...expense, 
-        amount: parseFloat(expense.amount),
+        title: expense.title !== undefined ? String(expense.title).trim() : local[index].title,
+        amount: expense.amount !== undefined ? parseFloat(expense.amount) : local[index].amount,
+        category: expense.category || local[index].category,
+        payment_method: expense.payment_method || local[index].payment_method || 'Cash',
         expense_date: safeDate,
+        notes: expense.notes !== undefined ? String(expense.notes).trim() : local[index].notes,
         photos: expense.photos || local[index].photos || [],
-        payment_method: expense.payment_method || local[index].payment_method || 'Cash'
+        updated_at: new Date().toISOString(),
       };
       saveLocalExpensesForUser(activeUser, local);
       return local[index];

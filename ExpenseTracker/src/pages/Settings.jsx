@@ -68,6 +68,15 @@ export const Settings = () => {
   const [budgetError, setBudgetError] = useState('');
   const [isSavingBudget, setIsSavingBudget] = useState(false);
 
+  // Pet type
+  const [petType, setPetType] = useState(() => localStorage.getItem('pet_type') || 'duck');
+
+  const handlePetTypeChange = (type) => {
+    setPetType(type);
+    localStorage.setItem('pet_type', type);
+    window.dispatchEvent(new Event('pet_type_change'));
+  };
+
   useEffect(() => {
     expenseService.getExpenses().then(data => setExpenses(data || [])).catch(() => {});
     budgetService.getBudget().then(bgt => {
@@ -107,6 +116,13 @@ export const Settings = () => {
   const handleAvatarFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      setToast({ message: 'Avatar image must be smaller than 2MB', type: 'error' });
+      e.target.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
@@ -215,6 +231,43 @@ export const Settings = () => {
           >
             Take Tour
           </button>
+        </div>
+
+        {/* 1.5 Pet Companion */}
+        <div className="clean-pink-card p-6 flex items-center justify-between bg-white gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-pink-100 text-rose-600 border border-pink-200 text-xl select-none">
+              {petType === 'cat' ? '🐱' : '🐥'}
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-rose-800 font-cursive">Pet Companion</h3>
+              <p className="text-xs text-rose-700 font-bold uppercase tracking-wide">
+                Choose your wandering desk buddy
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={() => handlePetTypeChange('duck')}
+              className={`px-4 py-2 text-xs font-bold rounded-2xl border-2 transition-all cursor-pointer uppercase flex items-center gap-1.5 ${
+                petType === 'duck'
+                  ? 'bg-rose-600 text-white border-rose-700 shadow-md'
+                  : 'bg-white text-rose-700 border-pink-300 hover:bg-pink-50'
+              }`}
+            >
+              🐥 Duck
+            </button>
+            <button
+              onClick={() => handlePetTypeChange('cat')}
+              className={`px-4 py-2 text-xs font-bold rounded-2xl border-2 transition-all cursor-pointer uppercase flex items-center gap-1.5 ${
+                petType === 'cat'
+                  ? 'bg-rose-600 text-white border-rose-700 shadow-md'
+                  : 'bg-white text-rose-700 border-pink-300 hover:bg-pink-50'
+              }`}
+            >
+              🐱 White Cat
+            </button>
+          </div>
         </div>
 
         {/* 2. Editable Account Profile Settings */}

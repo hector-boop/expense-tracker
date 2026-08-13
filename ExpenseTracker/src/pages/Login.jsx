@@ -13,6 +13,8 @@ export const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUnconfirmedModalOpen, setIsUnconfirmedModalOpen] = useState(false);
   const [isAuthErrorModalOpen, setIsAuthErrorModalOpen] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutSeconds, setLockoutSeconds] = useState(0);
 
   const { signIn } = useAuth();
   const navigate = useNavigate();
@@ -35,6 +37,11 @@ export const Login = () => {
     e.preventDefault();
     setErrorMsg('');
 
+    if (lockoutSeconds > 0) {
+      setErrorMsg(`Too many failed attempts. Please wait ${lockoutSeconds}s.`);
+      return;
+    }
+
     if (!validate()) {
       return;
     }
@@ -44,6 +51,23 @@ export const Login = () => {
     setIsSubmitting(false);
 
     if (error) {
+      const nextAttempts = failedAttempts + 1;
+      setFailedAttempts(nextAttempts);
+
+      if (nextAttempts >= 5) {
+        setLockoutSeconds(60);
+        setFailedAttempts(0);
+        const timer = setInterval(() => {
+          setLockoutSeconds((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+
       const msg = error.message?.toLowerCase() || '';
 
       if (msg.includes('confirm') || msg.includes('verify')) {
@@ -52,6 +76,7 @@ export const Login = () => {
         setIsAuthErrorModalOpen(true);
       }
     } else {
+      setFailedAttempts(0);
       navigate('/dashboard', { replace: true });
     }
   };
