@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { FaTimes } from 'react-icons/fa';
 
 export const Modal = ({ isOpen, onClose, title, children }) => {
@@ -31,15 +32,14 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
 
   if (!isOpen) return null;
 
-  return (
+  const modalElement = (
     <div 
-      onClick={handleClose}
-      className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 pt-20 sm:pt-22 pb-4 overflow-hidden bg-pink-950/30 backdrop-blur-[5px] ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-pink-950/20 backdrop-blur-[3px] ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
     >
       <div 
-        className={`w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-pink-300 overflow-hidden max-h-[calc(100vh-6.5rem)] flex flex-col ${
+        className={`w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-pink-300 overflow-hidden my-auto max-h-[calc(100vh-4rem)] flex flex-col ${
           isClosing ? 'animate-modal-pop-out' : 'animate-modal-pop'
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -53,6 +53,7 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
             type="button"
             onClick={handleClose}
             className="p-2 text-pink-400 hover:text-rose-600 hover:bg-pink-100 rounded-xl transition-colors cursor-pointer"
+            title="Close modal"
           >
             <FaTimes className="w-4 h-4" />
           </button>
@@ -65,4 +66,6 @@ export const Modal = ({ isOpen, onClose, title, children }) => {
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalElement, document.body) : modalElement;
 };

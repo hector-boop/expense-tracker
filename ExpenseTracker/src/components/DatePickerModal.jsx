@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { FaChevronLeft, FaChevronRight, FaTimes, FaCalendarAlt, FaThLarge } from 'react-icons/fa';
 
 export const DatePickerModal = ({
@@ -85,10 +86,9 @@ export const DatePickerModal = ({
     years.push(y);
   }
 
-  return (
+  const modalElement = (
     <div 
-      onClick={handleClose}
-      className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 pt-20 pb-4 overflow-hidden bg-pink-950/30 backdrop-blur-[5px] ${
+      className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 overflow-y-auto bg-pink-950/20 backdrop-blur-[3px] ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
     >
@@ -317,4 +317,6 @@ export const DatePickerModal = ({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalElement, document.body) : modalElement;
 };

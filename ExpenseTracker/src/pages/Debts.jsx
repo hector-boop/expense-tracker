@@ -369,7 +369,7 @@ export const Debts = () => {
                     : 'text-rose-900 bg-white hover:bg-pink-100 border border-pink-200'
                 }`}
               >
-                I Owe (Payables)
+                Money I Owe 
               </button>
               <button
                 onClick={() => setFilterType('owed_to_me')}
@@ -379,7 +379,7 @@ export const Debts = () => {
                     : 'text-rose-900 bg-white hover:bg-pink-100 border border-pink-200'
                 }`}
               >
-                Owed to Me (Receivables)
+                Money Owed to Me 
               </button>
               <button
                 onClick={() => setFilterType('settled')}

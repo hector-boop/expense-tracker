@@ -12,6 +12,18 @@ const QUACKS = [
   'And then he waddled away... waddle waddle'
 ];
 
+const MEOWS = [
+  'Meow!',
+  'If its not on sale, its not for me. Meow~',
+  'POV: You closed Shopee/Tiktok and won. Meow!',
+  'Before buying, ask: Do I need it, or is TikTok making me want it? Meow.',
+  'Delayed gratification > instant budol. Meow!',
+  'Saving ₱50 every day is ₱18,250 a year. Meow!',
+  'Future you is watching your checkout button. Meow!',
+  'Meow meow meow~',
+  'And then she slinked away... meow meow'
+];
+
 export const WanderingDuck = () => {
   const [isDisabled, setIsDisabled] = useState(() => {
     return localStorage.getItem('pet_duck_disabled') !== 'false';
@@ -23,7 +35,7 @@ export const WanderingDuck = () => {
   const [direction, setDirection] = useState('right');
   const [isWalking, setIsWalking] = useState(true);
   const [isHopping, setIsHopping] = useState(false);
-  const [speech, setSpeech] = useState('Quack!');
+  const [speech, setSpeech] = useState(() => (localStorage.getItem('pet_type') || 'duck') === 'cat' ? 'Meow!' : 'Quack!');
   const [speechVisible, setSpeechVisible] = useState(false);
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024);
   const speechTimerRef = useRef(null);
@@ -57,7 +69,8 @@ export const WanderingDuck = () => {
       } else {
         setIsDisabled(false);
         setIsEntering(true);
-        setSpeech("Quack! I'm back!");
+        const currentPet = localStorage.getItem('pet_type') || 'duck';
+        setSpeech(currentPet === 'cat' ? "Meow! I'm back!" : "Quack! I'm back!");
         setSpeechVisible(true);
         setTimeout(() => {
           setIsEntering(false);
@@ -126,8 +139,9 @@ export const WanderingDuck = () => {
     setIsHopping(true);
     setIsWalking(false);
 
-    // Pick random quack message
-    const randomMsg = QUACKS[Math.floor(Math.random() * QUACKS.length)];
+    // Pick random message based on pet type
+    const msgs = petType === 'cat' ? MEOWS : QUACKS;
+    const randomMsg = msgs[Math.floor(Math.random() * msgs.length)];
     setSpeech(randomMsg);
     setSpeechVisible(true);
 
@@ -157,7 +171,7 @@ export const WanderingDuck = () => {
       className="fixed bottom-6 sm:bottom-8 z-50 transition-all duration-1000 ease-out select-none pointer-events-auto"
       style={{ left: computeLeftStyle() }}
     >
-      <div className="relative cursor-pointer group" onClick={handleDuckClick} title="Click your pet duck! 🐥">
+      <div className="relative cursor-pointer group" onClick={handleDuckClick} title={petType === 'cat' ? 'Click your pet cat! 🐱' : 'Click your pet duck! 🐥'}>
         {/* Speech Bubble */}
         {speechVisible && (
           <div className="absolute -top-14 left-1/2 -translate-x-1/2 bg-white text-rose-900 px-3.5 py-1.5 rounded-2xl shadow-xl border-2 border-pink-300 text-xs font-black tracking-wide whitespace-nowrap animate-speech-pop z-50">

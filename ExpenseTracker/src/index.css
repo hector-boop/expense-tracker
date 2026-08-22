@@ -93,7 +93,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Firefox Standard Scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #e11d48 #fff1f2;
+  scrollbar-color: #f43f85 #fff1f2;
 }
 
 /* WebKit & Blink Browsers (Chrome, Edge, Safari, Opera) */
@@ -108,18 +108,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: #e11d48; /* Primary magenta/rose matching 'Save Expense' button */
+  background: #f43f85; /* Vibrant pink accent color */
   border-radius: 9999px;
   border: 2px solid #fff1f2;
   transition: background-color 0.2s ease;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: #be123c; /* Slightly darker rose on hover */
+  background: #e11d48; /* Darker rose on hover */
 }
 
 *::-webkit-scrollbar-thumb:active {
-  background: #9f1239; /* Deep rose on click/drag */
+  background: #be123c; /* Deep rose on click/drag */
 }
 
 *::-webkit-scrollbar-corner {
@@ -294,6 +294,37 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .animate-modal-pop-out {
   animation: modalPanelOut 0.18s ease-in forwards;
+}
+
+/* Smooth Professional Step Pan Transitions */
+@keyframes stepPanRight {
+  from {
+    opacity: 0;
+    transform: translateX(42px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes stepPanLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-42px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-step-next {
+  animation: stepPanRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-step-back {
+  animation: stepPanLeft 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* List Item Entry Animation */

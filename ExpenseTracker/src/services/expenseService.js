@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { deletePhotoFromStorage } from '../utils/imageUtils';
+import { withTimeout, getActiveUser } from '../lib/serviceUtils';
 
 // Default initial categories
 export const DEFAULT_CATEGORIES = [
@@ -16,39 +17,10 @@ export const DEFAULT_CATEGORIES = [
 
 const getTodayStr = () => new Date().toISOString().split('T')[0];
 
+// Clamp future dates to today — expense dates cannot be in the future
 const sanitizeExpenseDate = (dStr) => {
   const today = getTodayStr();
-  if (!dStr || dStr > today) {
-    return today;
-  }
-  return dStr;
-};
-
-const withTimeout = (promise, ms = 1500) => {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Fetch timeout')), ms))
-  ]);
-};
-
-// Helper to get active user (either from Supabase session or demo_user in localStorage)
-const getActiveUser = async () => {
-  const savedDemoUser = localStorage.getItem('demo_user');
-  if (savedDemoUser) {
-    try {
-      const parsed = JSON.parse(savedDemoUser);
-      if (parsed) return parsed;
-    } catch { /* ignore */ }
-  }
-
-  try {
-    const { data: { user } } = await withTimeout(supabase.auth.getUser(), 1500);
-    if (user) return user;
-  } catch (err) {
-    console.warn('Supabase auth get user error:', err.message);
-  }
-
-  return null;
+  return (!dStr || dStr > today) ? today : dStr;
 };
 
 // Helper to get user-specific storage key so accounts NEVER share data

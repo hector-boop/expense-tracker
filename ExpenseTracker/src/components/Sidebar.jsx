@@ -11,7 +11,8 @@ import {
   FaHeart,
   FaTable,
   FaEye,
-  FaEyeSlash
+  FaEyeSlash,
+  FaPaw
 } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 
@@ -105,11 +106,14 @@ export const Sidebar = ({ isOpen, onClose }) => {
         <div className="p-4 bg-white border-t border-pink-100 shrink-0 space-y-2">
           {/* Small Pet Toggle Button Above User Profile */}
           <div className="flex items-center justify-between px-1">
-            <span className="text-[10px] font-black uppercase tracking-wider text-rose-700">Wandering Pet</span>
+            <div className="flex items-center gap-1.5">
+              <FaPaw className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <span className="text-[10px] font-black uppercase tracking-wider text-rose-700">Wandering Pet</span>
+            </div>
             <button
               type="button"
               onClick={togglePetDuck}
-              title={isPetDisabled ? 'Enable Pet Duck' : 'Disable Pet Duck'}
+              title={isPetDisabled ? 'Enable Wandering Pet' : 'Disable Wandering Pet'}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition-all text-[10px] font-extrabold cursor-pointer border uppercase tracking-wider ${
                 isPetDisabled
                   ? 'bg-pink-50 text-rose-600 border-pink-200 hover:bg-pink-100 hover:text-rose-800'
