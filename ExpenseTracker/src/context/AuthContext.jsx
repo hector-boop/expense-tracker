@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import { withTimeout } from '../lib/serviceUtils';
 
 export const AuthContext = createContext({});
 
@@ -35,12 +36,7 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // 2. Fast timeout for Supabase cloud session check (1.5s max)
-        const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Session fetch timeout')), 1500)
-        );
-
-        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise]);
+        const { data: { session } } = await withTimeout(supabase.auth.getSession(), 1500);
         if (session?.user) {
           setSession(session);
           setUser(session.user);

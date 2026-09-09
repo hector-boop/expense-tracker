@@ -65,7 +65,7 @@ export const SummaryCards = ({ expenses = [], isLoading = false }) => {
           <div
             key={idx}
             style={{ animationDelay: `${idx * 60}ms` }}
-            className="clean-pink-card p-6 flex flex-col justify-between bg-white h-[148px] animate-list-item-in"
+            className="clean-pink-card p-6 flex flex-col justify-between bg-white h-[148px] animate-list-item-in transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-rose-700">

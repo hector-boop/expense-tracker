@@ -12,7 +12,7 @@ export const SubmitButton = ({
     <button
       type={type}
       disabled={disabled || loading}
-      className={`flex items-center justify-center gap-2 font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 rounded-2xl shadow-md border-2 border-rose-700 transition-all cursor-pointer ${className}`}
+      className={`flex items-center justify-center gap-2 font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 rounded-2xl shadow-md border-2 border-rose-700 transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.98] ${className}`}
       {...props}
     >
       {loading ? (

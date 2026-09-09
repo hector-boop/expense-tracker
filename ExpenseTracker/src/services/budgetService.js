@@ -64,31 +64,14 @@ export const budgetService = {
 
     try {
       if (activeUser?.id && !activeUser.id.startsWith('usr_')) {
-        const { data: existing } = await supabase
+        const { data, error } = await supabase
           .from('budgets')
-          .select('id')
-          .eq('user_id', activeUser.id)
-          .maybeSingle();
+          .upsert({ ...payload, user_id: activeUser.id }, { onConflict: 'user_id' })
+          .select()
+          .single();
 
-        let res;
-        if (existing?.id) {
-          res = await supabase
-            .from('budgets')
-            .update(payload)
-            .eq('id', existing.id)
-            .eq('user_id', activeUser.id)
-            .select()
-            .single();
-        } else {
-          res = await supabase
-            .from('budgets')
-            .insert([{ ...payload, user_id: activeUser.id }])
-            .select()
-            .single();
-        }
-
-        if (res.error) throw res.error;
-        if (res.data) return res.data;
+        if (error) throw error;
+        if (data) return data;
       }
     } catch (err) {
       console.warn('Supabase DB setBudget fallback to local storage:', err.message);

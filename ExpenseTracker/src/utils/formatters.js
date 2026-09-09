@@ -69,14 +69,11 @@ export const CATEGORY_COLORS = {
   Other: { bg: 'bg-pink-50 border border-pink-200', text: 'text-pink-800', hex: '#f8bbd0' },
 };
 
-export const getCategoryIcon = (categoryName) => {
-  const IconComponent = CATEGORY_ICONS[categoryName] || FaHeart;
-  return IconComponent;
-};
 
-export const getCategoryColor = (categoryName) => {
-  return CATEGORY_COLORS[categoryName] || CATEGORY_COLORS.Other;
-};
+export const getCategoryIcon = (name) => CATEGORY_ICONS[name] || FaHeart;
+
+export const getCategoryColor = (categoryName) => CATEGORY_COLORS[categoryName] || CATEGORY_COLORS.Other;
+
 
 // Payment Method Helpers
 export const PAYMENT_METHODS = ['Cash', 'Card', 'Online Wallet'];
@@ -87,9 +84,8 @@ export const PAYMENT_METHOD_ICONS = {
   'Online Wallet': FaWallet,
 };
 
-export const getPaymentMethodIcon = (method) => {
-  return PAYMENT_METHOD_ICONS[method] || FaMoneyBillWave;
-};
+
+export const getPaymentMethodIcon = (method) => PAYMENT_METHOD_ICONS[method] || FaMoneyBillWave;
 
 export const getPaymentMethodStyle = (method) => {
   switch (method) {

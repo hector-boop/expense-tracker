@@ -37,15 +37,7 @@ const getLocalExpensesForUser = (user) => {
     localStorage.setItem(key, JSON.stringify([]));
     return [];
   }
-  const parsed = JSON.parse(data);
-  // Auto-clamp any existing future expense dates to todayStr
-  const today = getTodayStr();
-  return parsed.map(exp => {
-    if (exp.expense_date && exp.expense_date > today) {
-      return { ...exp, expense_date: today };
-    }
-    return exp;
-  });
+  return JSON.parse(data);
 };
 
 const saveLocalExpensesForUser = (user, expenses) => {

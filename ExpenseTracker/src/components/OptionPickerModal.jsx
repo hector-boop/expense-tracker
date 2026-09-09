@@ -68,10 +68,10 @@ export const OptionPickerModal = ({
                   onSelectValue(val);
                   handleClose();
                 }}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold uppercase transition-all border-2 cursor-pointer ${
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold uppercase transition-all border-2 cursor-pointer active:scale-[0.98] ${
                   isSelected
                     ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
-                    : 'bg-pink-50 text-rose-900 border-pink-200 hover:bg-pink-100 hover:text-rose-950'
+                    : 'bg-pink-50 text-rose-900 border-pink-200 hover:bg-pink-100 hover:text-rose-950 hover:translate-x-0.5'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
